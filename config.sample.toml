@@ -7,3 +7,4 @@ dir = "/var/cache/greeter"
 [commands]
 reboot = [ "systemctl", "reboot" ]
 poweroff = [ "systemctl", "poweroff" ]
+session_start = [ "sway" ]

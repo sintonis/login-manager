@@ -1,6 +1,4 @@
 use std::{env, fs};
-use std::net::IpAddr;
-
 use log::{debug, error};
 use serde_derive::Deserialize;
 use thiserror::Error;
@@ -8,11 +6,25 @@ use thiserror::Error;
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub log: LogConf,
+    pub cache: CacheConf,
+    pub commands: CommandsConf,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct LogConf {
     pub dir: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct CacheConf {
+    pub dir: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct CommandsConf {
+    pub session_start: Vec<String>,
+    pub reboot: Vec<String>,
+    pub poweroff: Vec<String>,
 }
 
 #[derive(Error, Debug)]
