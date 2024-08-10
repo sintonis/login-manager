@@ -13,22 +13,12 @@ pub enum UserCreateViewMessage {
 }
 
 impl UserCreateView {
-    pub fn update(&self, message: UserCreateViewMessage) -> Command<UserCreateViewMessage> {
+    pub fn update(&mut self, message: UserCreateViewMessage) -> Command<UserCreateViewMessage> {
         match message {
             UserCreateViewMessage::SwitchButtonPressed => {
-                // When the button is pressed, switch to the UserSelect view
                 Command::perform(async { UserCreateViewMessage::Action(Action::SwitchView(View::UserSelect)) }, |msg| msg)
             }
-            UserCreateViewMessage::Action(action) => {
-                // Handle actions here, for now we just return none
-                match action {
-                    Action::SwitchView(view) => {
-                        // Handle view switch logic here, possibly in your main application logic
-                        println!("Switching to view: {:?}", view);
-                    }
-                }
-                Command::none()
-            }
+            _ => Command::none()
         }
     }
 

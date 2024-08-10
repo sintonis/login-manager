@@ -4,8 +4,8 @@ mod views;
 use iced::{Application, Command, Element, Font, Pixels, Settings, Size, Subscription, Theme};
 use crate::config::Config;
 use crate::gui::views::{Action, View};
+use crate::gui::views::splash_screen::{SplashScreenView, SplashScreenViewMessage};
 use crate::gui::views::user_create::{UserCreateView, UserCreateViewMessage};
-use crate::gui::views::user_login::{UserLoginView, UserLoginViewMessage};
 use crate::gui::views::user_select::{UserSelectView, UserSelectViewMessage};
 use crate::utils::user::User;
 
@@ -19,10 +19,9 @@ pub struct Greeter {
 
     pub user_select_view: UserSelectView,
     pub user_create_view: UserCreateView,
-    pub user_login_view: UserLoginView,
+    pub splash_screen_view: SplashScreenView,
 
     pub all_users: Vec<User>,
-    pub selected_user: Option<User>,
 
     pub config: Config,
 
@@ -34,11 +33,10 @@ impl Greeter {
             view: View::default(),
 
             user_select_view: UserSelectView::default(),
-            user_login_view: UserLoginView::default(),
             user_create_view: UserCreateView::default(),
+            splash_screen_view: SplashScreenView::default(),
 
             all_users: User::get_all(),
-            selected_user: None,
 
             config: config.clone(),
         }
@@ -49,7 +47,7 @@ impl Greeter {
 pub enum Message {
     UserSelectViewMessage(UserSelectViewMessage),
     UserCreateViewMessage(UserCreateViewMessage),
-    UserLoginViewMessage(UserLoginViewMessage),
+    SplashScreenViewMessage(SplashScreenViewMessage)
 }
 
 impl Application for Greeter {
@@ -96,17 +94,17 @@ impl Application for Greeter {
                     .update(msg)
                     .map(Message::UserCreateViewMessage);
             },
-            Message::UserLoginViewMessage(msg) => {
-                if let UserLoginViewMessage::Action(action) = &msg {
+            Message::SplashScreenViewMessage(msg) => {
+                if let SplashScreenViewMessage::Action(action) = &msg {
                     match action {
                         Action::SwitchView(view) => self.view = *view,
                     }
                 }
-                
+
                 return self
-                    .user_login_view
+                    .splash_screen_view
                     .update(msg)
-                    .map(Message::UserLoginViewMessage);
+                    .map(Message::SplashScreenViewMessage);
             },
         }
     }
@@ -114,8 +112,8 @@ impl Application for Greeter {
     fn view(&self) -> Element<Self::Message> {
         return match self.view {
             View::UserCreate => self.user_create_view.view().map(Message::UserCreateViewMessage),
-            View::UserLogin => self.user_login_view.view().map(Message::UserLoginViewMessage),
-            View::UserSelect => self.user_select_view.view().map(Message::UserSelectViewMessage)
+            View::UserSelect => self.user_select_view.view(&self.all_users).map(Message::UserSelectViewMessage),
+            View::Splash => self.splash_screen_view.view().map(Message::SplashScreenViewMessage)
         };
     }
 
@@ -126,8 +124,9 @@ impl Application for Greeter {
     fn subscription(&self) -> Subscription<Self::Message> {
         return match self.view {
             View::UserCreate => self.user_create_view.subscription().map(Message::UserCreateViewMessage),
-            View::UserLogin => self.user_login_view.subscription().map(Message::UserLoginViewMessage),
-            View::UserSelect => self.user_select_view.subscription().map(Message::UserSelectViewMessage)
+            View::UserSelect => self.user_select_view.subscription().map(Message::UserSelectViewMessage),
+            View::Splash => self.splash_screen_view.subscription().map(Message::SplashScreenViewMessage)
+
         }
     }
 }
