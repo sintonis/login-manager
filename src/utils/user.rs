@@ -3,7 +3,7 @@ use std::io::{self, BufRead};
 use pwd::Passwd;
 use crate::constants::{DEFAULT_UID_MAX, DEFAULT_UID_MIN, LOGIN_DEFINITION_FILE};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct User {
     pub name: String,
     pub uid: u32,

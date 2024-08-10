@@ -3,24 +3,24 @@ use log::{debug, error};
 use serde_derive::Deserialize;
 use thiserror::Error;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Config {
     pub log: LogConf,
     pub cache: CacheConf,
     pub commands: CommandsConf,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct LogConf {
     pub dir: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct CacheConf {
     pub dir: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct CommandsConf {
     pub session_start: Vec<String>,
     pub reboot: Vec<String>,

@@ -1,0 +1,1 @@
+mod splash_panel;
