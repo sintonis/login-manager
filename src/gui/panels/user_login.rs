@@ -1,7 +1,7 @@
 use iced::{Command, Element};
 use iced::widget::{Column, container, text};
 use crate::gui::views::Action;
-use crate::gui::views::user_select::UserSelectViewMessage;
+use crate::gui::views::user::UserViewMessage;
 use crate::utils::user::User;
 
 #[derive(Debug)]
@@ -15,11 +15,11 @@ impl UserLoginPanel {
         Self { user }
     }
     
-    pub fn update(&mut self, message: UserSelectViewMessage) -> Command<UserSelectViewMessage> {
+    pub fn update(&mut self, message: UserViewMessage) -> Command<UserViewMessage> {
         Command::none()
     }
 
-    pub fn view(&self) -> Element<UserSelectViewMessage> {
+    pub fn view(&self) -> Element<UserViewMessage> {
         let content = Column::new()
             .spacing(20)
             .push(text("Login"))

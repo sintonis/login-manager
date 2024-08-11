@@ -1,17 +1,15 @@
-pub mod user_select;
-pub mod user_create;
+pub mod user;
 pub mod splash_screen;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum View {
-    UserCreate,
-    UserSelect,
+    User,
     Splash,
 }
 
 impl Default for View {
     fn default() -> Self {
-        Self::UserSelect
+        Self::User
     }
 }
 

@@ -1,13 +1,12 @@
 mod panels;
 mod views;
 
+use alloc::borrow::Cow;
 use iced::{Application, Command, Element, Font, Pixels, Settings, Size, Subscription, Theme};
 use crate::config::Config;
 use crate::gui::views::{Action, View};
 use crate::gui::views::splash_screen::{SplashScreenView, SplashScreenViewMessage};
-use crate::gui::views::user_create::{UserCreateView, UserCreateViewMessage};
-use crate::gui::views::user_select::{UserSelectView, UserSelectViewMessage};
-use crate::utils::user::User;
+use crate::gui::views::user::{UserView, UserViewMessage};
 
 pub fn run(config: Config) -> Result<(), ()> {
     Greeter::run(settings(config)).map_err(|_| ())
@@ -17,11 +16,8 @@ pub fn run(config: Config) -> Result<(), ()> {
 pub struct Greeter {
     pub view: View,
 
-    pub user_select_view: UserSelectView,
-    pub user_create_view: UserCreateView,
+    pub user_view: UserView,
     pub splash_screen_view: SplashScreenView,
-
-    pub all_users: Vec<User>,
 
     pub config: Config,
 
@@ -32,11 +28,8 @@ impl Greeter {
         Greeter {
             view: View::default(),
 
-            user_select_view: UserSelectView::default(),
-            user_create_view: UserCreateView::default(),
+            user_view: UserView::new(),
             splash_screen_view: SplashScreenView::default(),
-
-            all_users: User::get_all(),
 
             config: config.clone(),
         }
@@ -45,8 +38,7 @@ impl Greeter {
 
 #[derive(Debug)]
 pub enum Message {
-    UserSelectViewMessage(UserSelectViewMessage),
-    UserCreateViewMessage(UserCreateViewMessage),
+    UserViewMessage(UserViewMessage),
     SplashScreenViewMessage(SplashScreenViewMessage)
 }
 
@@ -70,29 +62,17 @@ impl Application for Greeter {
 
     fn update(&mut self, message: Self::Message) -> Command<Self::Message> {
         match message {
-            Message::UserSelectViewMessage(msg) => {
-                if let UserSelectViewMessage::Action(action) = &msg {
+            Message::UserViewMessage(msg) => {
+                if let UserViewMessage::Action(action) = &msg {
                     match action {
                         Action::SwitchView(view) => self.view = *view,
                     }
                 }
                 
                 return self
-                    .user_select_view
+                    .user_view
                     .update(msg)
-                    .map(Message::UserSelectViewMessage);
-            },
-            Message::UserCreateViewMessage(msg) => {
-                if let UserCreateViewMessage::Action(action) = &msg {
-                    match action {
-                        Action::SwitchView(view) => self.view = *view,
-                    }
-                }
-                
-                return self
-                    .user_create_view
-                    .update(msg)
-                    .map(Message::UserCreateViewMessage);
+                    .map(Message::UserViewMessage);
             },
             Message::SplashScreenViewMessage(msg) => {
                 if let SplashScreenViewMessage::Action(action) = &msg {
@@ -111,8 +91,7 @@ impl Application for Greeter {
 
     fn view(&self) -> Element<Self::Message> {
         return match self.view {
-            View::UserCreate => self.user_create_view.view().map(Message::UserCreateViewMessage),
-            View::UserSelect => self.user_select_view.view(&self.all_users).map(Message::UserSelectViewMessage),
+            View::User => self.user_view.view().map(Message::UserViewMessage),
             View::Splash => self.splash_screen_view.view().map(Message::SplashScreenViewMessage)
         };
     }
@@ -123,8 +102,7 @@ impl Application for Greeter {
 
     fn subscription(&self) -> Subscription<Self::Message> {
         return match self.view {
-            View::UserCreate => self.user_create_view.subscription().map(Message::UserCreateViewMessage),
-            View::UserSelect => self.user_select_view.subscription().map(Message::UserSelectViewMessage),
+            View::User => self.user_view.subscription().map(Message::UserViewMessage),
             View::Splash => self.splash_screen_view.subscription().map(Message::SplashScreenViewMessage)
 
         }
@@ -138,20 +116,31 @@ fn settings(config: Config) -> Settings<Config> {
             size: Size::new(800.0, 400.0),
             resizable: true,
             decorations: true,
-            transparent: false,
+            transparent: true,
             level: Default::default(),
             icon: None,
             platform_specific: Default::default(),
-            min_size: Some(Size::new(800.0, 400.0)),
+            min_size: Some(Size::new(800.0, 480.0)),
             max_size: None,
             position: Default::default(),
-            visible: false,
+            visible: true,
             exit_on_close_request: true,
         },
         flags: config,
-        fonts: vec![],
+        fonts: vec![
+            Cow::from(include_bytes!("../../assets/fonts/Roboto-Black.ttf")),
+            Cow::from(include_bytes!("../../assets/fonts/Roboto-Bold.ttf")),
+            Cow::from(include_bytes!("../../assets/fonts/Roboto-Medium.ttf")),
+            Cow::from(include_bytes!("../../assets/fonts/Roboto-Regular.ttf")),
+            Cow::from(include_bytes!("../../assets/fonts/Roboto-Thin.ttf")),
+            Cow::from(include_bytes!("../../assets/fonts/Roboto-ThinItalic.ttf")),
+            Cow::from(include_bytes!("../../assets/fonts/Roboto-Italic.ttf")),
+            Cow::from(include_bytes!("../../assets/fonts/Roboto-Light.ttf")),
+            Cow::from(include_bytes!("../../assets/fonts/Roboto-LightItalic.ttf")),
+            Cow::from(include_bytes!("../../assets/fonts/Roboto-BlackItalic.ttf")),
+        ],
         default_font: Font::DEFAULT,
-        default_text_size: Pixels::from(32.0),
+        default_text_size: Pixels::from(16.0),
         antialiasing: false,
         id: Some("sintonis-greeter".to_string()),
     }
